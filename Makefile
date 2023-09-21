@@ -1,4 +1,5 @@
 VERSION=$(shell git describe --tags --always)
+IMAGE_REPO="swr.cn-east-3.myhuaweicloud.com/turingsyn"
 
 .PHONY: build
 # build binary file for tscli, output path is ./bin/
@@ -9,6 +10,11 @@ build:
 # build binary file for tscli, output path is ./bin/
 build-linux:
 	mkdir -p bin/ && CGO_ENABLED=0  GOOS=linux  GOARCH=amd64 go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
+
+.PHONY: build-image
+build-image: build-linux
+	docker build -t $(IMAGE_REPO)/xuanwu-agen:$(VERSION) .
+	docker push $(IMAGE_REPO)/xuanwu-agen:$(VERSION)
 
 # show help
 help:
