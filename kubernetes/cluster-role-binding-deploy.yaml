@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-cluster-role-binding
+subjects:
+  - kind: ServiceAccount
+    name: xuanwu-agent-sa  # 指定您要创建的 ServiceAccount 名称
+    namespace: xuanwu-agent  # 指定命名空间
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin  # 使用 cluster-admin ClusterRole，它具有 admin 权限
+  apiGroup: rbac.authorization.k8s.io

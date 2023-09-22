@@ -13,8 +13,8 @@ build-linux:
 
 .PHONY: build-image
 build-image: build-linux
-	docker build -t $(IMAGE_REPO)/xuanwu-agen:$(VERSION) .
-	docker push $(IMAGE_REPO)/xuanwu-agen:$(VERSION)
+	docker build -t $(IMAGE_REPO)/xuanwu-agent:$(VERSION) .
+	docker push $(IMAGE_REPO)/xuanwu-agent:$(VERSION)
 
 # show help
 help:

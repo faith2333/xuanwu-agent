@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: xuanwu-agent
+  namespace: xuanwu-agent
 spec:
   replicas: 1
   selector:
@@ -12,6 +13,7 @@ spec:
       labels:
         app: xuanwu-agent
     spec:
+      serviceAccountName: xuanwu-agent-sa
       containers:
         - name: xuanwu-agent
           image: xuanwu-agent:latest
@@ -19,8 +21,8 @@ spec:
             - containerPort: 8000
           env:
             - name: LISTEN_ADDRESS
-              value: 127.0.0.1
+              value: 127.0.0.1:8000
           command:
             - /bin/bash
-            - /app/xuanwu-agent deploy --address $LISTEN_ADDRESS --in-cluster
+            - /app/xuanwu-agent deploy --address $LISTEN_ADDRESS --in-cluster true
 
