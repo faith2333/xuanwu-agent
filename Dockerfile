@@ -1,5 +1,7 @@
 FROM --platform=amd64 centos:centos7
 
-RUN mkdir -p /app
-COPY ./bin/xuanwu-agent /app/xuanwu-agent
-COPY ./config /app/config
+RUN mkdir -p /root/app
+
+WORKDIR /root/app
+COPY bin/xuanwu-agent ./
+COPY ./config ./config

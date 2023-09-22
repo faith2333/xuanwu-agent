@@ -4,6 +4,11 @@ metadata:
   name: xuanwu-agent
   namespace: xuanwu-agent
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   replicas: 1
   selector:
     matchLabels:
@@ -13,16 +18,16 @@ spec:
       labels:
         app: xuanwu-agent
     spec:
-      serviceAccountName: xuanwu-agent-sa
       containers:
         - name: xuanwu-agent
-          image: xuanwu-agent:latest
+          image: swr.cn-east-3.myhuaweicloud.com/turingsyn/xuanwu-agent:48dae05
           ports:
             - containerPort: 8000
           env:
             - name: LISTEN_ADDRESS
               value: 127.0.0.1:8000
           command:
-            - /bin/bash
             - /app/xuanwu-agent deploy --address $LISTEN_ADDRESS --in-cluster true
+      imagePullSecrets:
+        - name: huawei-swr
 
