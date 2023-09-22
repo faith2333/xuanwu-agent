@@ -27,7 +27,8 @@ spec:
             - name: LISTEN_ADDRESS
               value: 127.0.0.1:8000
           command:
-            - /app/xuanwu-agent deploy --address $LISTEN_ADDRESS --in-cluster true
+            - /app/xuanwu-agent
+            - deploy --address $LISTEN_ADDRESS --in-cluster true
       imagePullSecrets:
         - name: huawei-swr
 

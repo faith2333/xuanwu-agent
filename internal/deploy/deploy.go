@@ -35,7 +35,7 @@ func (d *Deploy) Listen(flagParams *FlagParams) int {
 	}
 
 	r := gin.Default()
-	r.GET("/deploy/update", d.HandlerUpdate)
+	r.POST("/deploy/update", d.HandlerUpdate)
 
 	for {
 		err := r.Run(flagParams.Address)
