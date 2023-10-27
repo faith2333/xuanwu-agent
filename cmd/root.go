@@ -28,5 +28,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(deployCmd)
+	rootCmd.AddCommand(deployCmd, tsAgentCmd)
 }
