@@ -2,7 +2,9 @@ package tsagents
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"os"
 	"regexp"
 	"xuanwu-agent/internal/base"
 	"xuanwu-agent/pkg/consolelog"
@@ -12,13 +14,22 @@ const pattern = `^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5})$`
 
 type Server struct {
 	*base.Base
-	cLog *consolelog.ConsoleLog
+	tokenLimitsMap *TokenLimitsMap
+	cLog           *consolelog.ConsoleLog
+	llmAddress     string
 }
 
 func NewServer() *Server {
+	llmAddress := os.Getenv(EnvLLMAddress)
+	if llmAddress == "" {
+		panic(fmt.Sprintf("the llm address must be specified using environment variable %q", EnvLLMAddress))
+	}
+
 	return &Server{
-		Base: base.NewBase(),
-		cLog: consolelog.NewConsoleLog(),
+		Base:           base.NewBase(),
+		cLog:           consolelog.NewConsoleLog(),
+		tokenLimitsMap: NewTokenLimitsMap(),
+		llmAddress:     llmAddress,
 	}
 }
 
@@ -34,7 +45,7 @@ func (ts *Server) Listen(params *FlagParams) int {
 	}
 
 	r := gin.Default()
-	r.POST("/ts-agent/llm", ts.HandleLLMAPI)
+	r.POST("/ts-agent/llm")
 
 	for {
 		err = r.Run(params.Address)
