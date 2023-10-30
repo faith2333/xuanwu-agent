@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"xuanwu-agent/internal/base"
 	"xuanwu-agent/pkg/consolelog"
+	"xuanwu-agent/pkg/httpclient"
 )
 
 const pattern = `^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5})$`
@@ -17,6 +18,7 @@ type Server struct {
 	tokenLimitsMap *TokenLimitsMap
 	cLog           *consolelog.ConsoleLog
 	llmAddress     string
+	httpClient     *httpclient.Client
 }
 
 func NewServer() *Server {
@@ -30,6 +32,7 @@ func NewServer() *Server {
 		cLog:           consolelog.NewConsoleLog(),
 		tokenLimitsMap: NewTokenLimitsMap(),
 		llmAddress:     llmAddress,
+		httpClient:     &httpclient.Client{},
 	}
 }
 
@@ -45,7 +48,7 @@ func (ts *Server) Listen(params *FlagParams) int {
 	}
 
 	r := gin.Default()
-	r.POST("/ts-agent/llm")
+	r.POST("/ts-agent/llm", ts.HandleLLMAPI)
 
 	for {
 		err = r.Run(params.Address)

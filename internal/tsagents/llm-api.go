@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
+	"xuanwu-agent/pkg/httpclient"
 )
 
 const (
@@ -35,15 +36,16 @@ func (ts *Server) HandleLLMAPI(c *gin.Context) {
 		return
 	}
 
-	err = ts.dialLLM(params.URL, params.Data)
+	resp, err := ts.dialLLM(params.URL, params.Data)
 	if err != nil {
 		ts.HttpResponseFailed(c, fmt.Sprintf("dial LLM failed: %v", err))
 	}
 
+	ts.HttpResponseSuccess(c, resp)
 	return
 }
 
-func (ts *Server) dialLLM(url string, data interface{}) error {
-
-	return nil
+func (ts *Server) dialLLM(url string, data interface{}) ([]byte, error) {
+	return ts.httpClient.WithMethod(httpclient.MethodPOST).
+		WithURL(url).WithBody(data).WithContentTypeJSON().Do()
 }
