@@ -44,6 +44,9 @@ func (c *Client) WithHeader(header map[string]string) *Client {
 }
 
 func (c *Client) WithContentTypeJSON() *Client {
+	if c.header == nil {
+		c.header = make(map[string]string)
+	}
 	c.header["Content-Type"] = "application/json"
 	return c
 }
@@ -57,7 +60,10 @@ func (c *Client) Do() (resp []byte, err error) {
 	for pK, pV := range c.urlParams {
 		params.Add(pK, pV)
 	}
-	c.url += "?" + params.Encode()
+
+	if paramsEncoded := params.Encode(); paramsEncoded != "" {
+		c.url += "?" + paramsEncoded
+	}
 
 	body, err := json.Marshal(c.body)
 	if err != nil {

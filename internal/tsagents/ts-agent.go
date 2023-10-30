@@ -2,9 +2,7 @@ package tsagents
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"os"
 	"regexp"
 	"xuanwu-agent/internal/base"
 	"xuanwu-agent/pkg/consolelog"
@@ -22,10 +20,11 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	llmAddress := os.Getenv(EnvLLMAddress)
-	if llmAddress == "" {
-		panic(fmt.Sprintf("the llm address must be specified using environment variable %q", EnvLLMAddress))
-	}
+	//llmAddress := os.Getenv(EnvLLMAddress)
+	//if llmAddress == "" {
+	//	panic(fmt.Sprintf("the llm address must be specified using environment variable %q", EnvLLMAddress))
+	//}
+	llmAddress := "http://110.238.84.194:80"
 
 	return &Server{
 		Base:           base.NewBase(),

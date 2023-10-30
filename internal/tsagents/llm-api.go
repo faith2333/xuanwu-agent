@@ -39,13 +39,20 @@ func (ts *Server) HandleLLMAPI(c *gin.Context) {
 	resp, err := ts.dialLLM(params.URL, params.Data)
 	if err != nil {
 		ts.HttpResponseFailed(c, fmt.Sprintf("dial LLM failed: %v", err))
+		return
+	}
+	var data = make(map[string]interface{})
+	err = json.Unmarshal(resp, &data)
+	if err != nil {
+		ts.HttpResponseFailed(c, fmt.Sprintf("get response data failed: %v", err))
+		return
 	}
 
-	ts.HttpResponseSuccess(c, resp)
+	ts.HttpResponseSuccess(c, data)
 	return
 }
 
 func (ts *Server) dialLLM(url string, data interface{}) ([]byte, error) {
 	return ts.httpClient.WithMethod(httpclient.MethodPOST).
-		WithURL(url).WithBody(data).WithContentTypeJSON().Do()
+		WithURL(ts.llmAddress + url).WithBody(data).WithContentTypeJSON().Do()
 }

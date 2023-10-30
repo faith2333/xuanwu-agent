@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c77fab14-54ee-412a-937c-7961f8fcb815" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/pkg/httpclient/httpclient.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/httpclient/type.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/tsagents/llm-api.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/tsagents/llm-api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/tsagents/ts-agent.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/tsagents/ts-agent.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kubernetes/deployment-deploy.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/kubernetes/deployment-deploy.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/httpclient/httpclient.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/httpclient/httpclient.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
