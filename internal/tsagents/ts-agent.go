@@ -2,7 +2,10 @@ package tsagents
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"os"
 	"regexp"
 	"xuanwu-agent/internal/base"
 	"xuanwu-agent/pkg/consolelog"
@@ -17,14 +20,19 @@ type Server struct {
 	cLog           *consolelog.ConsoleLog
 	llmAddress     string
 	httpClient     *httpclient.Client
+	db             *gorm.DB
 }
 
 func NewServer() *Server {
-	//llmAddress := os.Getenv(EnvLLMAddress)
-	//if llmAddress == "" {
-	//	panic(fmt.Sprintf("the llm address must be specified using environment variable %q", EnvLLMAddress))
-	//}
-	llmAddress := "http://110.238.84.194:80"
+	llmAddress := os.Getenv(EnvLLMAddress)
+	if llmAddress == "" {
+		panic(fmt.Sprintf("the llm address must be specified using environment variable %q", EnvLLMAddress))
+	}
+
+	db, err := newDB()
+	if err != nil {
+		panic(err)
+	}
 
 	return &Server{
 		Base:           base.NewBase(),
@@ -32,6 +40,7 @@ func NewServer() *Server {
 		tokenLimitsMap: NewTokenLimitsMap(),
 		llmAddress:     llmAddress,
 		httpClient:     &httpclient.Client{},
+		db:             db,
 	}
 }
 
@@ -48,6 +57,7 @@ func (ts *Server) Listen(params *FlagParams) int {
 
 	r := gin.Default()
 	r.POST("/ts-agent/llm", ts.HandleLLMAPI)
+	r.GET("/ts-agent//llm/records", ts.ServerRecords)
 
 	for {
 		err = r.Run(params.Address)

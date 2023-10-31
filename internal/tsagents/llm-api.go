@@ -13,8 +13,9 @@ const (
 )
 
 type LLMAPIReqBody struct {
-	URL  string      `json:"URL"`
-	Data interface{} `json:"Data"`
+	WorkflowID string      `json:"WorkflowID"`
+	URL        string      `json:"URL"`
+	Data       interface{} `json:"Data"`
 }
 
 func (ts *Server) HandleLLMAPI(c *gin.Context) {
@@ -49,6 +50,12 @@ func (ts *Server) HandleLLMAPI(c *gin.Context) {
 	}
 
 	ts.HttpResponseSuccess(c, data)
+	go func() {
+		err = ts.InsertRecord(params.WorkflowID, "recruitment", data)
+		if err != nil {
+			ts.cLog.Errorf("insert execution record failed %v", err)
+		}
+	}()
 	return
 }
 
