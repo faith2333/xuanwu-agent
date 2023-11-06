@@ -1,7 +1,10 @@
 package tsagents
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
 	"strconv"
 )
 
@@ -31,6 +34,33 @@ func (ts *Server) ServerRecords(c *gin.Context) {
 		PageInfo: pageInfo,
 		Records:  records,
 	})
+}
+
+type DeleteRecordsParams struct {
+	IDs []int64 `json:"ids"`
+}
+
+func (ts *Server) ServerDeleteRecords(c *gin.Context) {
+	reqBody, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		ts.HttpResponseFailed(c, fmt.Sprintf("get request body failed: %v", err))
+		return
+	}
+
+	params := &DeleteRecordsParams{}
+	err = json.Unmarshal(reqBody, &params)
+	if err != nil {
+		ts.HttpResponseFailed(c, fmt.Sprintf("unmarshal request body failed: %v", err))
+		return
+	}
+
+	err = ts.DeleteRecords(params.IDs)
+	if err != nil {
+		ts.HttpResponseFailed(c, err.Error())
+		return
+	}
+
+	ts.HttpResponseSuccess(c, "")
 }
 
 func getListRecordsQueryParams(c *gin.Context) (*QueryParams, error) {

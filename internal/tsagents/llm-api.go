@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
+	"strings"
 	"xuanwu-agent/pkg/httpclient"
 )
 
@@ -14,8 +15,9 @@ const (
 
 type LLMAPIReqBody struct {
 	WorkflowID string      `json:"WorkflowID"`
-	URL        string      `json:"URL"`
-	Data       interface{} `json:"Data"`
+	ResumeLink string      `json:"resumeLink"`
+	URL        string      `json:"url"`
+	Data       interface{} `json:"data"`
 }
 
 func (ts *Server) HandleLLMAPI(c *gin.Context) {
@@ -49,17 +51,58 @@ func (ts *Server) HandleLLMAPI(c *gin.Context) {
 		return
 	}
 
+	err = ts.initRecordData(params, data)
+	if err != nil {
+		ts.cLog.Error(err.Error())
+	}
+
 	ts.HttpResponseSuccess(c, data)
-	go func() {
-		err = ts.InsertRecord(params.WorkflowID, "recruitment", data)
-		if err != nil {
-			ts.cLog.Errorf("insert execution record failed %v", err)
-		}
-	}()
 	return
 }
 
 func (ts *Server) dialLLM(url string, data interface{}) ([]byte, error) {
 	return ts.httpClient.WithMethod(httpclient.MethodPOST).
 		WithURL(ts.llmAddress + url).WithBody(data).WithContentTypeJSON().Do()
+}
+
+func (ts *Server) initRecordData(params *LLMAPIReqBody, data map[string]interface{}) error {
+	if params.URL != "/check_resume_eng" {
+		return nil
+	}
+
+	var candidateName string
+
+	paramsData := make(map[string]interface{})
+	dataBytes, err := json.Marshal(params.Data)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(dataBytes, &paramsData)
+	if err != nil {
+		return err
+	}
+
+	inputs, ok := paramsData["input"].([]interface{})
+	if !ok {
+		candidateName = "Unknown User"
+		ts.cLog.Error("get input from request data failed")
+	} else {
+		if len(inputs) == 0 {
+			candidateName = "Unknown User"
+			ts.cLog.Error("get input from request data failed")
+		}
+
+		candidateName = strings.Split(inputs[0].(string), "\n")[0]
+	}
+
+	go func() {
+		data["candidateName"] = candidateName
+		data["resumeLink"] = params.ResumeLink
+		err := ts.InsertRecord(params.WorkflowID, "recruitment", data)
+		if err != nil {
+			ts.cLog.Errorf("insert execution record failed %v", err)
+		}
+	}()
+
+	return nil
 }

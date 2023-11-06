@@ -58,6 +58,7 @@ func (ts *Server) Listen(params *FlagParams) int {
 	r := gin.Default()
 	r.POST("/ts-agent/llm", ts.HandleLLMAPI)
 	r.GET("/ts-agent//llm/records", ts.ServerRecords)
+	r.POST("/ts-agent/llm/records/delete", ts.ServerDeleteRecords)
 
 	for {
 		err = r.Run(params.Address)
